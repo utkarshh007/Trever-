@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Trever HyperFrames Preview</title>
+  <style>
+    html, body {
+      margin: 0;
+      background: #070b0e;
+      color: #f8fafc;
+      font: 14px ui-sans-serif, system-ui, sans-serif;
+      overflow: hidden;
+    }
+    iframe {
+      border: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="f" src="index.html" title="Trever HyperFrames Composition Preview"></iframe>
+  <script>
+    const f = document.getElementById('f');
+    const u = new URL('index.html', location.href);
+    for (const [k, v] of new URL(location.href).searchParams) {
+      u.searchParams.set(k, v);
+    }
+    f.src = u.toString();
+  </script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trever — Isometric Software Architecture Motion Reel</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #070b0e;
+      --surface: #0d151b;
+      --ink: #f8fafc;
+      --accent: #10b981;
+      --accent-bright: #34d399;
+      --teal: #0f4c5c;
+      --muted: #94a3b8;
+      --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      overflow: hidden;
+    }
+
+    #stage {
+      position: relative;
+      width: 100vw;
+      aspect-ratio: 16 / 9;
+      max-height: 100vh;
+      margin: 0 auto;
+      background: radial-gradient(circle at 50% 45%, #0c222a 0%, #070b0e 72%);
+      overflow: hidden;
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .scene.active-scene {
+      opacity: 1;
+    }
+
+    .scene-content {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 6vmin 8vmin;
+      z-index: 2;
+    }
+
+    .glow {
+      position: absolute;
+      width: 55vmin;
+      height: 55vmin;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.24) 0%, rgba(15, 76, 92, 0.08) 55%, transparent 75%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .circuit-backdrop {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.32;
+      z-index: 1;
+    }
+
+    .kicker {
+      font-family: var(--font-mono);
+      font-size: clamp(12px, 1.4vmin, 18px);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      margin-bottom: 1.8vmin;
+    }
+
+    .display-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5.6vmin, 76px);
+      font-weight: 800;
+      line-height: 1.06;
+      letter-spacing: -0.025em;
+      margin: 0 0 2vmin 0;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: clamp(14px, 2.1vmin, 26px);
+      color: var(--muted);
+      max-width: 68ch;
+      text-align: center;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .accent-gradient {
+      background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 45%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .split-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 5vmin;
+      width: 100%;
+      align-items: center;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3vmin;
+      width: 100%;
+      margin-top: 3vmin;
+    }
+
+    .stat-box {
+      background: rgba(13, 21, 27, 0.86);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      border-radius: 1.6vmin;
+      padding: 3vmin;
+      text-align: left;
+    }
+
+    .stat-num {
+      font-family: var(--font-mono);
+      font-size: clamp(24px, 4.8vmin, 64px);
+      font-weight: 700;
+      color: var(--accent-bright);
+    }
+
+    .stat-label {
+      font-size: clamp(11px, 1.6vmin, 20px);
+      color: var(--muted);
+      margin-top: 0.8vmin;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 1.6vmin;
+      height: 22vmin;
+      padding: 2.5vmin;
+      background: rgba(13, 21, 27, 0.82);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 1.6vmin;
+    }
+
+    .bar {
+      flex: 1;
+      background: linear-gradient(180deg, #34d399 0%, #0f4c5c 100%);
+      border-radius: 0.6vmin 0.6vmin 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div
+    id="stage"
+    data-composition-id="trever-architecture-reel"
+    data-start="0"
+    data-width="1920"
+    data-height="1080"
+    data-duration="15"
+  >
+    <!-- SCENE 1: 0.0s - 3.0s (Genesis Isometric Cube & Identity) -->
+    <div id="scene-1" class="scene clip active-scene" data-start="0" data-duration="3" data-track-index="0">
+      <div class="scene-content">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <img
+            id="s1-logo"
+            src="/assets/trever-logo.png"
+            alt="Trever Isometric Cube Logo"
+            style="width:14vmin;height:14vmin;object-fit:contain;margin-bottom:2.5vmin;"
+          />
+          <div id="s1-kicker" class="kicker">01 · TREVER SOFTWARE ENGINEERING</div>
+          <h1 id="s1-title" class="display-title">
+            Architecting <span class="accent-gradient">Living Systems</span>
+          </h1>
+          <p id="s1-sub" class="subtitle">
+            Custom platforms, cloud infrastructure, and applied AI built from modular geometric primitives.
+          </p>
+        </div>
+      </div>
+      <div id="s1-glow" class="glow" aria-hidden="true"></div>
+    </div>
+
+    <!-- SCENE 2: 3.0s - 6.0s (Circuit Bus & Microservices Decomposition) -->
+    <div id="scene-2" class="scene clip" data-start="3" data-duration="3" data-track-index="0" data-transition="cinematic-zoom">
+      <div class="scene-content">
+        <div class="split-layout">
+          <div>
+            <div id="s2-kicker" class="kicker">02 · DISTRIBUTED CIRCUIT BUS</div>
+            <h2 id="s2-title" class="display-title" style="text-align:left;font-size:clamp(24px,4.5vmin,60px);">
+              Sub-cube decomposition into <span class="accent-gradient">event-driven streams.</span>
+            </h2>
+            <p id="s2-sub" class="subtitle" style="text-align:left;">
+              Every domain service communicates across isolated, fault-tolerant circuit pathways with deterministic state synchronization.
+            </p>
+          </div>
+          <div style="display:flex;justify-content:center;">
+            <svg id="s2-iso-svg" viewBox="0 0 320 320" style="width:34vmin;height:34vmin;">
+              <polygon points="160,28 284,100 160,172 36,100" fill="#0f4c5c" stroke="#34d399" stroke-width="2" />
+              <polygon points="36,100 160,172 160,292 36,220" fill="#132028" stroke="#10b981" stroke-width="2" />
+              <polygon points="160,172 284,100 284,220 160,292" fill="#0a3542" stroke="#10b981" stroke-width="2" />
+              <path id="s2-circuit-path" d="M 98 64 L 160 100 L 222 64 M 160 100 L 160 232 M 98 184 L 160 220 L 222 184" fill="none" stroke="#34d399" stroke-width="4" stroke-linecap="round" stroke-dasharray="480" stroke-dashoffset="480" />
+              <circle cx="160" cy="100" r="7" fill="#34d399" />
+              <circle cx="160" cy="220" r="7" fill="#34d399" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div id="s2-glow" class="glow" aria-hidden="true"></div>
+    </div>
+
+    <!-- SCENE 3: 6.0s - 9.0s (12 Engineering Capabilities & Throughput Bars) -->
+    <div id="scene-3" class="scene clip" data-start="6" data-duration="3" data-track-index="0">
+      <div class="scene-content">
+        <div class="split-layout">
+          <div>
+            <div id="s3-kicker" class="kicker">03 · 12 CORE CAPABILITIES</div>
+            <h2 id="s3-title" class="display-title" style="text-align:left;font-size:clamp(24px,4.5vmin,60px);">
+              Full-stack velocity across <span class="accent-gradient">12 disciplines.</span>
+            </h2>
+            <p id="s3-sub" class="subtitle" style="text-align:left;">
+              Custom Software · Web · Native Mobile · UI/UX · AI &amp; ML · Cloud DevOps · QA · Cybersecurity · Data · Integration · Modernization · Advisory.
+            </p>
+          </div>
+          <div id="s3-chart" class="bar-chart">
+            <div class="bar" style="height:45%"></div>
+            <div class="bar" style="height:62%"></div>
+            <div class="bar" style="height:58%"></div>
+            <div class="bar" style="height:78%"></div>
+            <div class="bar" style="height:88%"></div>
+            <div class="bar" style="height:100%"></div>
+          </div>
+        </div>
+      </div>
+      <div id="s3-glow" class="glow" aria-hidden="true"></div>
+    </div>
+
+    <!-- SCENE 4: 9.0s - 12.0s (Quantified Production Telemetry) -->
+    <div id="scene-4" class="scene clip" data-start="9" data-duration="3" data-track-index="0" data-transition="cross-warp-morph">
+      <div class="scene-content">
+        <div style="width:100%;text-align:center;">
+          <div id="s4-kicker" class="kicker">04 · PRODUCTION TELEMETRY</div>
+          <h2 id="s4-title" class="display-title">
+            Engineered for <span class="accent-gradient">measurable impact.</span>
+          </h2>
+          <div class="stat-grid">
+            <div class="stat-box">
+              <div id="s4-stat1" class="stat-num">450k</div>
+              <div className="stat-label">Daily Shipment Events Processed</div>
+            </div>
+            <div class="stat-box">
+              <div id="s4-stat2" class="stat-num">35ms</div>
+              <div className="stat-label">Real-Time AI Fraud Scoring Latency</div>
+            </div>
+            <div class="stat-box">
+              <div id="s4-stat3" class="stat-num">99.99%</div>
+              <div className="stat-label">Multi-Region Kubernetes Uptime SLA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="s4-glow" class="glow" aria-hidden="true"></div>
+    </div>
+
+    <!-- SCENE 5: 12.0s - 15.0s (Sovereign Enterprise Scale Finale) -->
+    <div id="scene-5" class="scene clip" data-start="12" data-duration="3" data-track-index="0">
+      <div class="scene-content">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div id="s5-kicker" class="kicker">05 · READY FOR PRODUCTION SCALE</div>
+          <h2 id="s5-title" class="display-title">
+            Build your next platform with <span class="accent-gradient">Trever.</span>
+          </h2>
+          <p id="s5-sub" class="subtitle">
+            Discovery · Architecture · Agile Sprints · Automated QA · 24/7 Cloud SLA
+          </p>
+        </div>
+      </div>
+      <div id="s5-glow" class="glow" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <script>
+    const tl = gsap.timeline({ paused: true });
+
+    const scenes = [
+      { id: '#scene-1', start: 0, duration: 3 },
+      { id: '#scene-2', start: 3, duration: 3 },
+      { id: '#scene-3', start: 6, duration: 3 },
+      { id: '#scene-4', start: 9, duration: 3 },
+      { id: '#scene-5', start: 12, duration: 3 },
+    ];
+
+    scenes.forEach((s, idx) => {
+      if (idx > 0) {
+        tl.set(scenes[idx - 1].id, { opacity: 0 }, s.start);
+      }
+      tl.set(s.id, { opacity: 1 }, s.start);
+    });
+
+    // === SCENE 1 (0.0s - 3.0s) ===
+    tl.from('#s1-logo', { scale: 0.75, autoAlpha: 0, duration: 0.65, ease: 'expo.out' }, 0.15);
+    tl.from('#s1-kicker', { y: 20, autoAlpha: 0, duration: 0.5, ease: 'power3.out' }, 0.3);
+    tl.from('#s1-title', { y: 36, autoAlpha: 0, duration: 0.65, ease: 'power3.out' }, 0.45);
+    tl.from('#s1-sub', { y: 24, autoAlpha: 0, duration: 0.55, ease: 'power2.out' }, 0.65);
+    // Mid-scene activity: logo drift + glow pulse
+    tl.to('#s1-logo', { y: -8, duration: 2.6, ease: 'sine.inOut' }, 0.2);
+    tl.to('#s1-glow', { scale: 1.18, opacity: 0.75, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 0.1);
+
+    // === SCENE 2 (3.0s - 6.0s) ===
+    tl.from('#s2-kicker, #s2-title, #s2-sub', { y: 32, autoAlpha: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out' }, 3.2);
+    tl.from('#s2-iso-svg', { scale: 0.82, rotation: -8, autoAlpha: 0, duration: 0.75, ease: 'expo.out' }, 3.25);
+    // Mid-scene activity: SVG circuit path draws itself + cube slow zoom
+    tl.to('#s2-circuit-path', { strokeDashoffset: 0, duration: 2.2, ease: 'power2.inOut' }, 3.4);
+    tl.to('#s2-iso-svg', { scale: 1.05, duration: 2.6, ease: 'none' }, 3.3);
+
+    // === SCENE 3 (6.0s - 9.0s) ===
+    tl.from('#s3-kicker, #s3-title, #s3-sub', { y: 30, autoAlpha: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out' }, 6.2);
+    tl.from('#s3-chart .bar', { scaleY: 0, transformOrigin: 'bottom', duration: 0.75, stagger: 0.09, ease: 'expo.out' }, 6.35);
+    tl.to('#s3-glow', { opacity: 0.7, scale: 1.15, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 6.1);
+
+    // === SCENE 4 (9.0s - 12.0s) ===
+    tl.from('#s4-kicker, #s4-title', { y: 28, autoAlpha: 0, duration: 0.55, stagger: 0.1, ease: 'power3.out' }, 9.2);
+    tl.from('#scene-4 .stat-box', { y: 34, autoAlpha: 0, duration: 0.65, stagger: 0.12, ease: 'expo.out' }, 9.4);
+    // Mid-scene activity: deterministic counter roll
+    const counterProxy = { v: 0 };
+    tl.to(counterProxy, {
+      v: 450,
+      duration: 2.1,
+      ease: 'power2.out',
+      onUpdate: () => {
+        const el = document.getElementById('s4-stat1');
+        if (el) el.textContent = Math.round(counterProxy.v) + 'k';
+      },
+    }, 9.45);
+
+    // === SCENE 5 (12.0s - 15.0s) ===
+    tl.from('#s5-kicker, #s5-title, #s5-sub', { y: 32, autoAlpha: 0, duration: 0.65, stagger: 0.12, ease: 'power3.out' }, 12.2);
+    tl.to('#s5-glow', { scale: 1.25, opacity: 0.85, duration: 2.6, ease: 'sine.inOut' }, 12.1);
+
+    window.__timelines = window.__timelines || {};
+    window.__timelines['trever-architecture-reel'] = tl;
+
+    // Support URL ?frame= and ?autoplay=1 parameters for preview & embedded playback
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('frame')) {
+      const frame = Number(params.get('frame')) || 0;
+      const fps = Number(params.get('fps')) || 60;
+      tl.time(frame / fps);
+    } else if (params.get('autoplay') === '1') {
+      tl.repeat(-1).play();
+    }
+  </script>
+</body>
+</html>

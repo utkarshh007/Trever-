@@ -1,0 +1,385 @@
+@import "tailwindcss";
+
+:root {
+  /* Scroll Craft Official Theme Tokens for Trever (Deep Charcoal, Teal & Emerald) */
+  --sc-canvas:      #070b0e;
+  --sc-surface:     #0d151b;
+  --sc-ink:         #f1f5f9;
+  --sc-ink-soft:    #94a3b8;
+  --sc-accent:      #10b981;
+  --sc-accent-ink:  #04120c;
+
+  --sc-font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --sc-font-text:    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --sc-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* Calibrated fluid type ramp so multi-line display copy fits 900px pinned stages */
+  --sc-t-2xl:  clamp(1.5rem, 1.25rem + 1.1vw, 2.05rem);
+  --sc-t-3xl:  clamp(1.7rem, 1.35rem + 1.4vw, 2.3rem);
+  --sc-t-4xl:  clamp(2.15rem, 1.55rem + 2.05vw, 3.25rem);
+
+  /* Positive optical tracking, word spacing & line-height for Plus Jakarta Sans */
+  --sc-track-tight:   0.004em;
+  --sc-track-snug:    0.008em;
+  --sc-track-normal:  0.015em;
+  --sc-track-wide:    0.08em;
+  --sc-leading-none:  1.26;
+  --sc-leading-tight: 1.32;
+  --sc-leading-body:  1.8;
+  --sc-measure:       65ch;
+
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --bg: #070b0e;
+  --ink: #f1f5f9;
+  --accent: #10b981;
+  --teal: #0f4c5c;
+  --muted: #94a3b8;
+  --ease-out-expo: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-emil: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html,
+body {
+  font-family: var(--sc-font-text);
+  background-color: var(--sc-canvas);
+  color: var(--sc-ink);
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+  word-spacing: 0.07em;
+  text-align: left;
+  overflow-x: clip;
+}
+
+/* ============================================================================
+   Global Typography & Readability Floor (Unlayered to supersede /scrollcraft.css)
+   Ensures generous line-height, open letter/word spacing, left-alignment, and
+   clear vertical spacing between headings, paragraphs, and list items.
+   ========================================================================== */
+h1,
+h2,
+.sc-display,
+.sc-display--xl,
+.sc-display--lg,
+.sc-display--md {
+  font-family: var(--sc-font-display);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: 0.005em;
+  word-spacing: 0.045em;
+  text-align: left;
+  text-wrap: balance;
+}
+
+h3,
+h4 {
+  font-family: var(--sc-font-display);
+  font-weight: 700;
+  line-height: 1.36;
+  letter-spacing: 0.008em;
+  word-spacing: 0.045em;
+  text-align: left;
+}
+
+p,
+li,
+dd,
+blockquote,
+.sc-body,
+.sc-lede {
+  font-family: var(--sc-font-text);
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+  word-spacing: 0.075em;
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.sc-body {
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.075rem);
+  line-height: 1.82;
+  letter-spacing: 0.015em;
+  word-spacing: 0.075em;
+  max-width: 65ch;
+  color: #cbd5e1;
+  text-align: left;
+}
+
+.sc-lede {
+  font-size: clamp(1.02rem, 0.98rem + 0.22vw, 1.125rem);
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+  word-spacing: 0.075em;
+  max-width: 54ch;
+  color: #cbd5e1;
+  text-align: left;
+}
+
+/* Fallback vertical spacing when elements are inside non-flex/non-grid containers */
+:not(.flex):not(.grid) > :is(h1, h2, h3, h4) + :is(p, .sc-body, .sc-lede, ul, ol) {
+  margin-top: 1.25rem;
+}
+
+:not(.flex):not(.grid) > :is(p, .sc-body, .sc-lede) + :is(p, .sc-body, .sc-lede) {
+  margin-top: 1.25rem;
+}
+
+:not(.flex):not(.grid) > li + li {
+  margin-top: 0.75rem;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Isometric circuit grid texture */
+.circuit-grid {
+  background-size: 56px 56px;
+  background-image:
+    linear-gradient(to right, rgba(16, 185, 129, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.045) 1px, transparent 1px);
+}
+
+/* Spatial elevated surfaces with 1px top lip edge highlight (--sc-edge) and offset shadow */
+.glass-panel {
+  background: rgba(11, 18, 24, 0.88);
+  border: 1px solid rgba(241, 245, 249, 0.1);
+  box-shadow: var(--sc-edge), var(--sc-e2);
+}
+
+.spatial-card {
+  background: linear-gradient(165deg, rgba(14, 23, 30, 0.92) 0%, rgba(8, 13, 18, 0.88) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.16);
+  box-shadow: var(--sc-edge), var(--sc-e2);
+  transition:
+    border-color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .spatial-card:hover {
+    border-color: rgba(16, 185, 129, 0.44);
+    box-shadow: var(--sc-edge), var(--sc-e3);
+  }
+}
+
+/* Origin-shifting navigation link underline */
+.nav-link-emil {
+  position: relative;
+  transition: color 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.nav-link-emil::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1.5px;
+  background-color: var(--sc-accent);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link-emil:hover::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+/* Tactile press feedback (<300ms ease-out per taste.md) */
+.micro-press {
+  transition:
+    background-color 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    color 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Interactive Spotlight Card: cursor-tracking radial lighting + keyboard focus */
+.interactive-spotlight-card {
+  --spot-x: 50%;
+  --spot-y: 50%;
+  --spot-opacity: 0;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(165deg, rgba(14, 23, 30, 0.92) 0%, rgba(8, 13, 18, 0.88) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.16);
+  box-shadow: var(--sc-edge), var(--sc-e2);
+  transition:
+    border-color 220ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.interactive-spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--spot-x) var(--spot-y),
+    rgba(16, 185, 129, 0.13),
+    rgba(15, 76, 92, 0.06) 45%,
+    transparent 75%
+  );
+  opacity: var(--spot-opacity);
+  transition: opacity 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .interactive-spotlight-card:hover {
+    --spot-opacity: 1;
+    border-color: rgba(52, 211, 153, 0.48);
+    box-shadow: var(--sc-edge), var(--sc-e3);
+  }
+}
+
+.interactive-spotlight-card:focus-visible {
+  --spot-opacity: 1;
+  border-color: rgba(52, 211, 153, 0.55);
+  outline: 2px solid var(--sc-accent);
+  outline-offset: 3px;
+}
+
+.interactive-spotlight-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Signature Move: --sc-p driven Cube-to-Circuit Unfolder in Act 3 */
+.trever-circuit-trace {
+  stroke-dasharray: 420;
+  stroke-dashoffset: calc(420 * (1 - min(1, var(--sc-p, 0.15) * 1.35)));
+}
+
+/* Lateral Pan Rail in Act 4 (Substance) */
+.trever-pan-rail {
+  display: flex;
+  align-items: stretch;
+  gap: 1.75rem;
+  padding-inline: var(--sc-gutter, 3rem);
+  width: max-content;
+}
+
+.trever-pan-card {
+  width: clamp(23rem, 34vw, 30rem);
+  flex-shrink: 0;
+}
+
+/* Step down hero display size on phones per taste.md Typography rule */
+@media (max-width: 700px) {
+  .sc-display--xl {
+    font-size: var(--sc-t-2xl);
+  }
+}
+
+/* ============================================================================
+   Hero Section Typography & Vertical Rhythm
+   ========================================================================== */
+.hero-copy-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(1.5rem, 2.4vw, 2.15rem);
+  max-width: 35rem;
+}
+
+.sc-display.hero-headline,
+.hero-headline {
+  font-family: var(--sc-font-display);
+  font-weight: 800;
+  font-size: clamp(2.15rem, 1.55rem + 2.05vw, 3.25rem);
+  line-height: 1.24;
+  letter-spacing: 0.004em;
+  word-spacing: 0.045em;
+  max-width: 15.5ch;
+  margin: 0;
+  color: #ffffff;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.sc-lede.hero-lede,
+.hero-lede {
+  font-family: var(--sc-font-text);
+  font-size: clamp(1.02rem, 0.98rem + 0.2vw, 1.125rem);
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+  word-spacing: 0.075em;
+  max-width: 46ch;
+  margin: 0;
+  color: #cbd5e1;
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.4rem;
+}
+
+@media (max-width: 1023px) {
+  .sc-stage.hero-stage {
+    height: auto;
+    min-height: 100svh;
+    align-items: flex-start;
+    padding-top: 6.5rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .hero-copy-stack {
+    gap: 1.5rem;
+    max-width: 36rem;
+  }
+
+  .sc-display.hero-headline,
+  .hero-headline {
+    font-size: clamp(1.9rem, 1.35rem + 2.4vw, 2.65rem);
+    line-height: 1.26;
+    letter-spacing: 0.004em;
+    max-width: 16ch;
+  }
+
+  .sc-lede.hero-lede,
+  .hero-lede {
+    font-size: clamp(1rem, 0.96rem + 0.2vw, 1.075rem);
+    line-height: 1.78;
+    max-width: 48ch;
+  }
+
+  .hero-cta-row {
+    padding-top: 0.3rem;
+  }
+}
+
+/* Prevent flow-reveal y-transforms from shifting or compressing vertical spacing between headings and paragraphs */
+[data-sc-in],
+[data-sc-stagger] > *,
+[data-sc-stagger] > [data-stagger-heading="true"] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trever-circuit-trace {
+    stroke-dashoffset: 0 !important;
+  }
+  .trever-pan-rail {
+    padding-block: 1rem;
+  }
+}
+
+
