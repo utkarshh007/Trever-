@@ -32,6 +32,17 @@ jobs:
       - name: Build site
         run: bun run build
 
+      - name: Validate Hostinger directory
+        id: hostinger-dir
+        env:
+          FTP_SERVER_DIR: ${{ secrets.HOSTINGER_FTP_SERVER_DIR }}
+        run: |
+          if [ -z "$FTP_SERVER_DIR" ]; then
+            echo "HOSTINGER_FTP_SERVER_DIR is required." >&2
+            exit 1
+          fi
+          printf 'server_dir=%s/\n' "${FTP_SERVER_DIR%/}" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
@@ -41,4 +52,4 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: dist/
-          server-dir: ${{ secrets.HOSTINGER_FTP_SERVER_DIR }}
+          server-dir: ${{ steps.hostinger-dir.outputs.server_dir }}
