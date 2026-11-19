@@ -37,15 +37,14 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-800/75 bg-[#070b0e]/92">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-8 px-6 py-4">
-        {/* Zone 1: Single element brand wordmark with Trever logo */}
+        {/* Zone 1: Brand wordmark with Trever logo */}
         <a href="#top" className="flex items-center gap-3 shrink-0 group whitespace-nowrap">
           <img
-            src="/assets/trever-logo.png"
-            alt="Trever Logo"
+            src="/assets/trever-logo-trimmed.png"
+            alt=""
             width="32"
             height="32"
-            referrerPolicy="no-referrer"
-            className="w-8 h-8 object-contain transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
+            className="w-8 h-8 shrink-0 object-contain transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
           />
           <span className="text-xl font-bold tracking-tight text-white whitespace-nowrap transition-colors duration-150 group-hover:text-emerald-300">
             TREVER

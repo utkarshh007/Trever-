@@ -27,6 +27,7 @@ export default function EstimatorContactSection() {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionError, setSubmissionError] = useState('');
 
   const estimate = calculateProjectScope({
     selectedServiceIds: formData.selectedServices,
@@ -50,6 +51,7 @@ export default function EstimatorContactSection() {
 
     setFormData(validation.sanitizedData);
     setErrors({});
+    setSubmissionError('');
 
     const serviceTitles = validation.sanitizedData.selectedServices.map(
       id => TREVER_SERVICES.find(s => s.id === id)?.title || id
@@ -75,16 +77,23 @@ export default function EstimatorContactSection() {
     };
 
     try {
-      await fetch('/api/inquiries/submit', {
+      const response = await fetch('/send-demo.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-    } catch {
-      // Background server logging handled silently
+      if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.error || 'We could not send your demo request. Please try again.');
+      }
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Demo request submission failed:', error);
+      setSubmissionError(
+        error instanceof Error ? error.message : 'We could not send your demo request. Please try again.'
+      );
     } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
     }
   };
 
@@ -207,6 +216,11 @@ export default function EstimatorContactSection() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+                  {submissionError && (
+                    <div role="alert" className="p-3 rounded-xl bg-red-950/40 border border-red-500/50 text-sm text-red-200">
+                      {submissionError}
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="full-name" className="text-xs font-mono text-slate-300 block">
@@ -218,7 +232,7 @@ export default function EstimatorContactSection() {
                         maxLength={100}
                         value={formData.fullName}
                         onChange={e => setFormData({ ...formData, fullName: e.target.value })}
-                        placeholder="e.g. Alex Vance"
+                        placeholder=""
                         className={`w-full px-3.5 py-2.5 rounded-xl bg-[#070b0e] border text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors ${
                           errors.fullName ? 'border-red-500' : 'border-slate-800'
                         }`}
@@ -240,7 +254,7 @@ export default function EstimatorContactSection() {
                         maxLength={254}
                         value={formData.email}
                         onChange={e => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="e.g. alex@company.com"
+                        placeholder=""
                         className={`w-full px-3.5 py-2.5 rounded-xl bg-[#070b0e] border text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors ${
                           errors.email ? 'border-red-500' : 'border-slate-800'
                         }`}
@@ -264,7 +278,7 @@ export default function EstimatorContactSection() {
                         maxLength={120}
                         value={formData.companyName}
                         onChange={e => setFormData({ ...formData, companyName: e.target.value })}
-                        placeholder="e.g. Acme Systems"
+                        placeholder=""
                         className="w-full px-3.5 py-2.5 rounded-xl bg-[#070b0e] border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors"
                       />
                     </div>
@@ -279,7 +293,7 @@ export default function EstimatorContactSection() {
                         maxLength={30}
                         value={formData.phone}
                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="+1 (555) 019-2834"
+                        placeholder=""
                         className={`w-full px-3.5 py-2.5 rounded-xl bg-[#070b0e] border text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors ${
                           errors.phone ? 'border-red-500' : 'border-slate-800'
                         }`}

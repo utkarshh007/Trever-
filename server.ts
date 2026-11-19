@@ -17,7 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function dispatchSheetAndZoho(inquiry: WorkspaceInquiryPayload) {
-  const recipientEmail = process.env.ZOHO_RECIPIENT_EMAIL || 'us620009@gmail.com';
+  const recipientEmail = process.env.ZOHO_RECIPIENT_EMAIL || 'trever@hypepensec.com';
   const emailContent = buildZohoEmailContent(recipientEmail, inquiry);
   const rowValues = buildSheetRowValues(inquiry);
 
@@ -103,7 +103,7 @@ async function dispatchSheetAndZoho(inquiry: WorkspaceInquiryPayload) {
       html: emailContent.htmlBody,
     });
   } else if (zohoWebhookUrl) {
-    await fetch(zohoWebhookUrl, {
+    const response = await fetch(zohoWebhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -114,6 +114,11 @@ async function dispatchSheetAndZoho(inquiry: WorkspaceInquiryPayload) {
         inquiry,
       }),
     });
+    if (!response.ok) {
+      throw new Error(`Zoho webhook returned HTTP ${response.status}`);
+    }
+  } else {
+    throw new Error('Email delivery is not configured. Set Zoho SMTP credentials or ZOHO_WEBHOOK_URL.');
   }
 }
 
@@ -123,8 +128,8 @@ async function startServer() {
 
   app.use(express.json({ limit: '256kb' }));
 
-  // POST /api/inquiries/submit — Server-side handler saving to Sheet & sending Zoho Mail via .env
-  app.post('/api/inquiries/submit', async (req, res) => {
+  // Keep the PHP endpoint URL working when the app is served by Node.
+  const submitInquiry = async (req: express.Request, res: express.Response) => {
     try {
       const inquiry = req.body as WorkspaceInquiryPayload;
       if (!inquiry || !inquiry.fullName || !inquiry.email || !inquiry.projectDescription) {
@@ -144,7 +149,8 @@ async function startServer() {
         error: 'Failed to process inquiry submission.',
       });
     }
-  });
+  };
+  app.post(['/send-demo.php', '/api/inquiries/submit'], submitInquiry);
 
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

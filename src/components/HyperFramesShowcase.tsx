@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Play, Pause, RotateCcw, Eye } from 'lucide-react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 import StaggeredHeading from './StaggeredHeading';
 
 declare global {
@@ -96,7 +96,6 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [posterMode, setPosterMode] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [activeSceneIdx, setActiveSceneIdx] = useState<number>(0);
 
@@ -108,7 +107,6 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
 
     if (prefersReduced) {
       setIsPlaying(false);
-      setPosterMode(true);
     }
 
     const stageEl = stageRef.current;
@@ -176,16 +174,15 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
       typeof scrollScrubProgress === 'number' &&
       scrollScrubProgress > 0.02 &&
       scrollScrubProgress < 0.98 &&
-      !posterMode &&
       tlRef.current
     ) {
       const targetSec = scrollScrubProgress * TOTAL_DURATION;
       tlRef.current.time(targetSec);
     }
-  }, [scrollScrubProgress, posterMode]);
+  }, [scrollScrubProgress]);
 
   useEffect(() => {
-    if (!isPlaying || posterMode) return;
+    if (!isPlaying) return;
     let rafId = 0;
     let lastTs = performance.now();
 
@@ -202,7 +199,7 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [isPlaying, posterMode]);
+  }, [isPlaying]);
 
   const seekToTime = (targetSec: number) => {
     const clamped = Math.max(0, Math.min(TOTAL_DURATION - 0.05, targetSec));
@@ -214,7 +211,6 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
   };
 
   const handleSceneSelect = (scene: HyperScene) => {
-    setPosterMode(false);
     seekToTime(scene.startSec + 0.8);
   };
 
@@ -224,40 +220,8 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
   return (
     <div
       data-testid="hyperframes-showcase"
-      className="pointer-events-auto interactive-spotlight-card rounded-2xl border border-emerald-500/30 p-5 sm:p-6 shadow-2xl flex flex-col justify-between gap-5 text-left"
+      className="pointer-events-auto interactive-spotlight-card rounded-2xl border border-emerald-500/30 p-5 sm:p-6 shadow-2xl flex flex-col justify-between gap-4 text-left"
     >
-      {/* Top Status Bar */}
-      <div className="flex items-center justify-between gap-3 border-b border-slate-800/80 pb-3.5">
-        <div
-          data-testid="hyperframes-tech-badge"
-          className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#070b0e]/90 border border-slate-800/90 text-xs font-mono"
-        >
-          <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
-          <span className="text-slate-400">Motion</span>
-          <span className="text-slate-600" aria-hidden="true">·</span>
-          <span className="text-emerald-400 font-semibold">HyperFrames</span>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => {
-            const nextPoster = !posterMode;
-            setPosterMode(nextPoster);
-            if (nextPoster) {
-              setIsPlaying(false);
-              seekToTime(4.5);
-            } else {
-              setIsPlaying(true);
-            }
-          }}
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#070b0e] border border-slate-800 hover:border-emerald-500/40 text-xs font-mono text-slate-200 hover:text-white micro-press shrink-0"
-          title="Toggle between live motion sequence and static blueprint poster"
-        >
-          <Eye className="w-3.5 h-3.5 text-emerald-400" />
-          <span>{posterMode ? 'Poster Mode' : 'Live Motion'}</span>
-        </button>
-      </div>
-
       {/* Composition Stage */}
       <div
         ref={stageRef}
@@ -415,11 +379,10 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-11 h-11 rounded-xl bg-[#070b0e]/92 border border-emerald-400/50 p-1.5 shadow-lg flex items-center justify-center">
                   <img
-                    src="/assets/trever-logo.png"
+                    src="/assets/trever-logo-trimmed.png"
                     alt="Trever Cube Logo"
                     width="36"
                     height="36"
-                    referrerPolicy="no-referrer"
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -434,15 +397,12 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => {
-              if (posterMode) setPosterMode(false);
-              setIsPlaying(prev => !prev);
-            }}
-            aria-label={isPlaying && !posterMode ? 'Pause motion sequence' : 'Play motion sequence'}
+            onClick={() => setIsPlaying(prev => !prev)}
+            aria-label={isPlaying ? 'Pause motion sequence' : 'Play motion sequence'}
             data-testid="hyperframes-play-toggle"
             className="p-2 rounded-lg bg-emerald-400 text-slate-950 hover:bg-emerald-300 micro-press shrink-0"
           >
-            {isPlaying && !posterMode ? (
+            {isPlaying ? (
               <Pause className="w-3.5 h-3.5" />
             ) : (
               <Play className="w-3.5 h-3.5" />
@@ -459,7 +419,6 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
             onClick={e => {
               const rect = e.currentTarget.getBoundingClientRect();
               const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-              setPosterMode(false);
               seekToTime(ratio * TOTAL_DURATION);
             }}
             onKeyDown={e => {
@@ -482,7 +441,6 @@ export default function HyperFramesShowcase({ scrollScrubProgress }: HyperFrames
           <button
             type="button"
             onClick={() => {
-              setPosterMode(false);
               seekToTime(0);
               setIsPlaying(true);
             }}
